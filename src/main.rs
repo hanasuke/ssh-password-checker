@@ -13,13 +13,7 @@ struct ResultStruct {
 fn main() {
     // parse command line
     let target_host = parse_args(env::args().collect());
-
-    let command_result = Command::new("ssh")
-                                 .arg("-tt")
-                                 .arg("-o StrictHostKeyChecking=no")
-                                 .arg("-o PubkeyAuthentication=no")
-                                 .arg("-o PasswordAuthentication=no")
-                                 .args(target_host).output().expect("failed");
+    let command_result = exec_ssh_command(target_host);
 
     // "naosuke@10.0.1.18: Permission denied (publickey,password)." みたいなのが入ってくる
     let stderr: String = String::from_utf8_lossy(&command_result.stderr).to_string();
@@ -62,4 +56,15 @@ fn parse_args(exec_args: Vec<String>) -> Vec<String> {
     };
 
     return target_host
+}
+
+fn exec_ssh_command(target_host: Vec<String>) -> std::process::Output {
+    return Command::new("ssh")
+                    .arg("-tt")
+                    .arg("-o StrictHostKeyChecking=no")
+                    .arg("-o PubkeyAuthentication=no")
+                    .arg("-o PasswordAuthentication=no")
+                    .arg("-o ChallengeResponseAuthentication=no")
+                    .arg("-o ConnectTimeout=2")
+                    .args(target_host).output().expect("failed");
 }
