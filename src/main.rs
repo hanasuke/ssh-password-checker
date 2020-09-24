@@ -47,9 +47,6 @@ fn parse_args(exec_args: Vec<String>) -> Vec<String> {
     let mut args = exec_args.clone();
     let mut target_host: Vec<String> = Vec::new();
 
-    println!("{}", args[2]);
-    println!("{}", args[1]);
-
     match args.len() {
         2 => {
             target_host.push(args.remove(1));
