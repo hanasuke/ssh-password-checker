@@ -1,5 +1,5 @@
 [package]
-name = "ssh_scan"
+name = "ssh-password-checker"
 version = "0.1.0"
 authors = ["naosuke <naosuke@ntt.dev>"]
 edition = "2018"
