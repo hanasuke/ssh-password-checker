@@ -18,16 +18,19 @@ fn main() {
     // "naosuke@10.0.1.18: Permission denied (publickey,password)." みたいなのが入ってくる
     let stderr: String = String::from_utf8_lossy(&command_result.stderr).to_string();
     let result = if stderr.contains("password") {
+        // password auth有効のとき
         ResultStruct {
             status: false,
             result: "[WARN] password authentication is enable".to_string(),
         }
-    } else if stderr.contains("Connection refused") {
+    } else if stderr.contains("Connection refused") || stderr.contains("Operation timed out") {
+        // sshがそもそも接続失敗
         ResultStruct {
             status: true,
-            result: "[INFO] Connection refused".to_string(),
+            result: "[INFO] ssh couldn't connect to this host".to_string(),
         }
     } else {
+        // それ以外
         ResultStruct {
             status: true,
             result: "[INFO] no problem!".to_string(),
