@@ -20,17 +20,18 @@ ssh-password-checker ${target_serve_ip} ${target_server_port}
 ```
 // when `PasswordAuthentication no` on server side
 $ ./ssh-password-checker 192.0.2.2
-{"status":true,"result":"[INFO] no problem!"}
+{"message":"no problem!","result_code":100}
 
 // when `PasswordAuthentication yes` on server side
 $ ./ssh-password-checker 192.0.2.3
+{"message":"password authentication is enable!","result_code":300}
 {"status":false,"result":"[WARN] password authentication is enable"}
 
 // when target port is specified
 $ ./ssh-password-checker 192.0.2.3 22
-{"status":false,"result":"[WARN] password authentication is enable"}
+{"message":"password authentication is enable!","result_code":300}
 
 // when ssh connection fails
 $ ./ssh-password-checker 192.0.2.4 10022
-{"status":true,"result":"[INFO] ssh couldn't connect to this host"}
+{"message":"ssh couldn't connect to this host","result_code":100}
 ```

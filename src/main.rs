@@ -4,10 +4,19 @@ use serde_json;
 use std::env;
 use std::process::Command;
 
+#[allow(dead_code)]
+const RESULT_PASS: u16 = 100;
+#[allow(dead_code)]
+const RESULT_SUCCESS: u16 = 200;
+#[allow(dead_code)]
+const RESULT_WARNING: u16 = 300;
+#[allow(dead_code)]
+const RESULT_CRITICAL: u16 = 400;
+
 #[derive(Serialize, Deserialize)]
 struct ResultStruct {
-    status: bool,
-    result: String,
+    message: String,
+    result_code: u16,
 }
 
 fn main() {
@@ -17,27 +26,27 @@ fn main() {
 
     // "naosuke@10.0.1.18: Permission denied (publickey,password)." みたいなのが入ってくる
     let stderr: String = String::from_utf8_lossy(&command_result.stderr).to_string();
-    let result = if stderr.contains("password") {
-        // password auth有効のとき
-        ResultStruct {
-            status: false,
-            result: "[WARN] password authentication is enable".to_string(),
-        }
-    } else if stderr.contains("Connection refused") || stderr.contains("Operation timed out") {
-        // sshがそもそも接続失敗
-        ResultStruct {
-            status: true,
-            result: "[INFO] ssh couldn't connect to this host".to_string(),
-        }
-    } else {
-        // それ以外
-        ResultStruct {
-            status: true,
-            result: "[INFO] no problem!".to_string(),
-        }
+    let (code, message) = parse_stderr(stderr);
+
+    let output = ResultStruct {
+        message: message,
+        result_code: code,
     };
 
-    println!("{}", serde_json::to_string(&result).unwrap());
+    println!("{}", serde_json::to_string(&output).unwrap());
+}
+
+fn parse_stderr(stderr: String) -> (u16, String) {
+    return if stderr.contains("password") {
+        // password auth有効のとき
+        (RESULT_WARNING, "password authentication is enable".to_string())
+    } else if stderr.contains("Connection refused") || stderr.contains("Operation timed out") {
+        // sshがそもそも接続失敗
+        (RESULT_PASS, "ssh couldn't connect to this host".to_string())
+    } else {
+        // それ以外
+        (RESULT_PASS, "no problem!".to_string())
+    }
 }
 
 fn parse_args(exec_args: Vec<String>) -> Vec<String> {
