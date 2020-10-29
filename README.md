@@ -6,6 +6,14 @@ This is a CLI tool that checks if the target server has disabled SSH password au
 - OpenSSH
   - execute `ssh` command in this tool
 
+## build (for linux)
+### using container
+```
+mkdir -p target/release
+docker build -t ssh-checker .
+docker run -v $(pwd)/target/release:/workdir/target/release ssh-checker
+```
+
 ## how to use
 ```
 ssh-password-checker ${target_serve_ip} ${target_server_port}
